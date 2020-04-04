@@ -39,7 +39,7 @@ public class StudentPlayer extends SaboteurPlayer {
 		else
 			isMaximizing = false;
 		// Get the best node containing its score and index via minimax
-		int[] node = minimax (boardState, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, player, isMaximizing);		
+		int[] node = minimax (boardState, 3, Integer.MIN_VALUE, Integer.MAX_VALUE, player, isMaximizing);		
 		Move myMove = legalMoves.get(node[1]);
 		// Return your move to be processed by the server.
 		return myMove;
@@ -52,31 +52,30 @@ public class StudentPlayer extends SaboteurPlayer {
 		int score = 0;
 		int bestScore = 0;
 		int index = 0;
+		SaboteurBoardState newState = boardState;
 		// If game is over, check who wins the game or tie the game
-//		if (boardState.gameOver() == true) {
-//			if (boardState.getWinner() == player) {
-//				score = 1000 - depth;
-//			}
-//			else if (boardState.getWinner() != player && boardState.getWinner() < 2){
-//				score = -1000 - depth;
-//			}
-//			else
-//				score = 0;
-		// If game is over or depth is equal to 0, call evaluation
-		if (boardState.gameOver() == true || depth == 0) {
-			score = evaluation();
-			node[0] = score;
-			node[1] = index;
-			return node;
+		if (boardState.gameOver() == true) {
+			if (boardState.getWinner() == player) {
+				score = 1000 - depth;
+			}
+			else if (boardState.getWinner() != player && boardState.getWinner() < 2){
+				score = -1000 - depth;
+			}
+			else
+				score = 0;
 		}
-		// if game is not over or depth is not equal to 0, recursively call minimax
+		// If depth is equal to 0, call evaluation
+		else if (depth == 0) {
+			score = evaluation(newState);
+		}
+		// If game is neither over nor depth is not equal to 0, recursively call minimax to get the desired score and index
 		else {
 			if (isMaximizing == true) {
 				bestScore = Integer.MIN_VALUE;
-				ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
+				ArrayList<SaboteurMove> legalMoves = newState.getAllLegalMoves();
 				for (int i = 0; i < legalMoves.size(); i++) {
-					boardState.processMove(legalMoves.get(i));
-					score = minimax(boardState, depth - 1, alpha, beta, player, false)[0];
+					newState.processMove(legalMoves.get(i));
+					score = minimax(newState, depth - 1, alpha, beta, player, false)[0];
 					bestScore = Math.max(score, bestScore);
 					if (alpha < beta) {
 						alpha = Math.max(alpha, score);
@@ -85,16 +84,13 @@ public class StudentPlayer extends SaboteurPlayer {
 					else if (beta <= alpha)
 							break;
 				}
-				node[0] = bestScore;
-				node[1] = index;
-				return node;
 			}
 			else {
 				bestScore = Integer.MAX_VALUE;
-				ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
+				ArrayList<SaboteurMove> legalMoves = newState.getAllLegalMoves();
 				for (int i = 0; i < legalMoves.size(); i++) {
-					boardState.processMove(legalMoves.get(i));
-					score = minimax(boardState, depth - 1, alpha, beta, player, true)[0];
+					newState.processMove(legalMoves.get(i));
+					score = minimax(newState, depth - 1, alpha, beta, player, true)[0];
 					bestScore = Math.min(score, bestScore);
 					if (alpha < beta) {
 						alpha = Math.min(alpha, score);
@@ -103,14 +99,16 @@ public class StudentPlayer extends SaboteurPlayer {
 					else if (beta <= alpha)
 							break;
 				}
-				node[0] = bestScore;
-				node[1] = index;
-				return node;
 			}
 		}
+		node[0] = score;
+		node[1] = index;
+		return node;
 	}
 	
-	public int evaluation() {
-		return 1;
+	public int evaluation(SaboteurBoardState boardState) {
+		int score = 0;
+		
+		return score;
 	}
 }
