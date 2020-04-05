@@ -3,6 +3,7 @@ package student_player;
 import boardgame.Move;
 
 import Saboteur.SaboteurPlayer;
+import Saboteur.cardClasses.SaboteurTile;
 
 import java.util.ArrayList;
 
@@ -39,7 +40,7 @@ public class StudentPlayer extends SaboteurPlayer {
 		else
 			isMaximizing = false;
 		// Get the best node containing its score and index via minimax
-		int[] node = minimax (boardState, 3, Integer.MIN_VALUE, Integer.MAX_VALUE, player, isMaximizing);		
+		int[] node = minimax (boardState, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, player, isMaximizing);		
 		Move myMove = legalMoves.get(node[1]);
 		// Return your move to be processed by the server.
 		return myMove;
@@ -84,6 +85,9 @@ public class StudentPlayer extends SaboteurPlayer {
 					else if (beta <= alpha)
 							break;
 				}
+				node[0] = bestScore;
+				node[1] = index;
+				return node;
 			}
 			else {
 				bestScore = Integer.MAX_VALUE;
@@ -99,6 +103,9 @@ public class StudentPlayer extends SaboteurPlayer {
 					else if (beta <= alpha)
 							break;
 				}
+				node[0] = bestScore;
+				node[1] = index;
+				return node;
 			}
 		}
 		node[0] = score;
@@ -107,8 +114,8 @@ public class StudentPlayer extends SaboteurPlayer {
 	}
 	
 	public int evaluation(SaboteurBoardState boardState) {
+		SaboteurTile[][] board = boardState.getHiddenBoard();
 		int score = 0;
-		
 		return score;
 	}
 }
