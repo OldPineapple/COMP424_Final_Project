@@ -3,7 +3,11 @@ package student_player;
 import boardgame.Move;
 
 import Saboteur.SaboteurPlayer;
-import Saboteur.cardClasses.SaboteurTile;
+import Saboteur.cardClasses.SaboteurBonus;
+import Saboteur.cardClasses.SaboteurCard;
+import Saboteur.cardClasses.SaboteurDrop;
+import Saboteur.cardClasses.SaboteurMalus;
+import Saboteur.cardClasses.SaboteurMap;
 
 import java.util.ArrayList;
 
@@ -28,6 +32,107 @@ public class StudentPlayer extends SaboteurPlayer {
 	 * make decisions.
 	 */
 	public Move chooseMove(SaboteurBoardState boardState) {
+		SaboteurMove myMove = null;
+		int playerNb = boardState.getTurnPlayer();
+		System.out.println("Our AI is " + playerNb);
+		ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
+		ArrayList<SaboteurCard> currentCard = boardState.getCurrentPlayerCards();
+		int nuggetIndex = MyTools.getNuggetPositionIndex(boardState);
+/*		for (int i = 0; i < currentCard.size(); i ++) {
+			System.out.println(MyTools.isBlindAlleyCard(boardState, i));
+			System.out.println(currentCard.get(i).getName());
+		}
+		for(int i = 0; i < MyTools.blindAlleyCardList.size(); i++) {
+			System.out.println(MyTools.blindAlleyCardList.get(i));
+		}
+		System.out.println("nuggtet Index is:" + nuggetIndex); */
+		int moveIndex;
+		if (boardState.getNbMalus(playerNb) == 0) {	// if we can use Tile card
+			moveIndex = MyTools.chooseNextBestMove(nuggetIndex, legalMoves, boardState);
+//			System.out.println("move Index is:" + moveIndex);
+			if (MyTools.getNuggetPositionIndex(boardState) == -1 && moveIndex == -2) {	// if we do not know the destination but we have Map card in hand
+				myMove = new SaboteurMove(new SaboteurMap(), SaboteurBoardState.hiddenPos[MyTools.nexthiddenTileIndex(boardState)][0], 
+						SaboteurBoardState.hiddenPos[MyTools.nexthiddenTileIndex(boardState)][1], playerNb);
+			}
+			else if (MyTools.getNuggetPositionIndex(boardState) == -1 && moveIndex == -1) {	// if we neither know the destination nor have map card
+				for (int i = 0; i < currentCard.size(); i++) {
+					if (MyTools.isBlindAlleyCard(boardState, i)) {	// if we have blind alley card in our hand, drop it
+						myMove = new SaboteurMove(new SaboteurDrop(), i, 0, playerNb);
+						break;
+					}
+					else if (currentCard.get(i).getName().equals("Malus")) {	// if we have Malus card in our hand, use it
+						myMove = new SaboteurMove(new SaboteurMalus(), 0, 0, playerNb);
+						break;
+					}
+					else	 {	// if our hand does not have the above two, we choose a random move.
+						if (i == (currentCard.size() - 1)) {
+							moveIndex = MyTools.chooseNextBestMove(1, legalMoves, boardState);
+							myMove = legalMoves.get(moveIndex);
+							break;
+						}
+						continue;
+					}
+				}
+			}
+			else if (MyTools.getNuggetPositionIndex(boardState) != -1 && moveIndex == -1) {	// if we know the destination but we do not have normal card
+				for (int i = 0; i < currentCard.size(); i++) {
+					if (MyTools.isBlindAlleyCard(boardState, i) || currentCard.get(i).getName().equals("Map")) {	// if the card is blind alley or map card, discard it
+						myMove = new SaboteurMove(new SaboteurDrop(), i, 0, playerNb);
+						break;
+					}
+					else if (currentCard.get(i).getName().equals("Malus")) {	// if we have Malus card in our hand, use it
+						myMove = new SaboteurMove(new SaboteurMalus(), 0, 0, playerNb);
+						break;
+					}
+					else	 {	// if our hand does not have the above two, we choose a random move.
+						if (i == (currentCard.size() - 1)) {
+							myMove = boardState.getRandomMove();
+							break;
+						}
+						continue;
+					}
+				}
+			}
+			else
+				myMove = legalMoves.get(moveIndex);
+		}
+		else {	// if we cannnot use Tile card
+			if (MyTools.hasCardInHand(currentCard, "Bonus")) {	// if we have bonus card, use it
+				myMove = new SaboteurMove(new SaboteurBonus(), 0, 0, playerNb);
+			}
+			else if (MyTools.getNuggetPositionIndex(boardState) == -1 && MyTools.hasCardInHand(boardState.getCurrentPlayerCards(), "Map")) {	
+				// if we do not know the destination but we have Map card in hand
+				myMove = new SaboteurMove(new SaboteurMap(), SaboteurBoardState.hiddenPos[MyTools.nexthiddenTileIndex(boardState)][0], 
+						SaboteurBoardState.hiddenPos[MyTools.nexthiddenTileIndex(boardState)][1], playerNb);
+			}
+			else {
+				for (int i = 0; i < currentCard.size(); i++) {
+					if (MyTools.isBlindAlleyCard(boardState, i) || currentCard.get(i).getName().equals("Map")) {	
+						// if we have blind alley card, drop it, if we have Map card but we know the destination, drop it as well
+						myMove = new SaboteurMove(new SaboteurDrop(), i, 0, playerNb);
+						break;
+					}
+					else if (currentCard.get(i).getName().equals("Malus")) {	// if we have Malus card in our hand, use it
+						myMove = new SaboteurMove(new SaboteurMalus(), 0, 0, playerNb);
+						break;
+					}
+					else {
+						if (i == (currentCard.size() - 1)) {		// the only card remaining that we can play is destroy, play it randomly
+							myMove = boardState.getRandomMove();
+							break;
+						}
+						continue;
+					}
+				}
+			}
+		}
+		if (boardState.isLegal(myMove))	// check if our move is a legal move, if it is, return it
+			return myMove;
+		else		// if it is not a legal move, play randomly (to ensure no error occurs)
+			return boardState.getRandomMove();
+	}
+
+	/*	public Move chooseMove(SaboteurBoardState boardState) {
 		// You probably will make separate functions in MyTools.
 		// For example, maybe you'll need to load some pre-processed best opening
 		// strategies...
@@ -45,6 +150,7 @@ public class StudentPlayer extends SaboteurPlayer {
 		// Return your move to be processed by the server.
 		return myMove;
 	}
+
 
 	// Proceed a minimax search in the board with alpha beta prunning
 	// It will return a score and its index number in order to get the best move.
@@ -112,10 +218,9 @@ public class StudentPlayer extends SaboteurPlayer {
 		node[1] = index;
 		return node;
 	}
-	
+
 	public int evaluation(SaboteurBoardState boardState) {
-		SaboteurTile[][] board = boardState.getHiddenBoard();
 		int score = 0;
 		return score;
-	}
+	} */
 }
