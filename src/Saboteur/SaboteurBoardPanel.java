@@ -108,7 +108,7 @@ public class SaboteurBoardPanel extends BoardPanel implements MouseListener, Mou
         isMapSelected = false;
         isDropping = false;
         flipState = false;
-        Scale = 1.2;
+        Scale = 1.4;
     }
 
     // Overriding BoardPanel methods to help with listener functionality.
