@@ -84,7 +84,7 @@ public class MyTools {
 		}
 	}
 
-	// The following codes are copied from SaboteurBoardState.java class and modified by us
+	// The following four methods are copied from SaboteurBoardState.java class and modified by us
 	// What we need is to test whether there is a one-path connected from starting point to destination
 	private static boolean containsIntArray(ArrayList<int[]> a,int[] o){ //the .equals used in Arraylist.contains is not working between arrays..
 		if (o == null) {
@@ -177,7 +177,7 @@ public class MyTools {
       int minDistance = 1000;
       int bestMove = 0;
       if (objectiveTileNumber == -1) objectiveTileNumber = 1; //if objective is unknown, Goal is middle tile
-      int[] goalXY = {boardState.hiddenPos[objectiveTileNumber][0], boardState.hiddenPos[objectiveTileNumber][1]};
+      int[] goalXY = {SaboteurBoardState.hiddenPos[objectiveTileNumber][0], SaboteurBoardState.hiddenPos[objectiveTileNumber][1]};
       
       for (int i = 0; i < myLegalMoves.size(); i++) {
           SaboteurMove move = myLegalMoves.get(i);
@@ -216,6 +216,16 @@ public class MyTools {
       return false;
   }
   
-
+  // This method aims to check if we have a winning step
+  public static int hasWinningStep(SaboteurBoardState boardState, ArrayList<SaboteurMove> legalMoves, int playerNb) {
+	  for (int i = 0; i < legalMoves.size(); i++) {
+		  SaboteurBoardState clonedBoardState = boardState;
+		  clonedBoardState.processMove(legalMoves.get(i));
+		  if (clonedBoardState.gameOver() == true && clonedBoardState.getWinner() == playerNb) {
+			  return i;
+		  }
+	  }
+	  return -1;
+  }
 
 }

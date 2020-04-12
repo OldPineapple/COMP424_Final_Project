@@ -96,25 +96,44 @@ public class StudentPlayer extends SaboteurPlayer {
 					}
 				}
 			}
-//			else {	// if nugget index = 1 and we have normal card
-//				int[] targetPos = {SaboteurBoardState.hiddenPos[nuggetIndex][0], SaboteurBoardState.hiddenPos[nuggetIndex][1]};
-//				if (MyTools.cardPath(boardState, originTargets, targetPos, true) && MyTools.pathToHidden(boardState, nuggetIndex) == false) {
-//					// if from origin to destination, card is connected but one-map is not connected, which means there is a blind alley card played by opponent
-//					// in the middle of the path, resulting game is not over
-//					if () {
-//						if (MyTools.hasCardInHand(currentCard, "Destroy")) {	// if we have destroy card, use it to delete the blind alley tile
-//							myMove = new SaboteurMove(new SaboteurDestroy(), 0, 0, playerNb);
-//						}
-//						else
-//							myMove = new SaboteurMove(new SaboteurDrop(), 0, 0, playerNb);
+			else {	// if nugget index != -1 and we have normal card
+				int[] targetPos = {SaboteurBoardState.hiddenPos[nuggetIndex][0], SaboteurBoardState.hiddenPos[nuggetIndex][1]};
+				if (MyTools.cardPath(boardState, originTargets, targetPos, true) && MyTools.pathToHidden(boardState, nuggetIndex) == false) {
+					// if from origin to destination, card is connected but one-map is not connected, which means there is a blind alley card played by opponent
+					// in the middle of the path, resulting game is not over
+						if (MyTools.hasCardInHand(currentCard, "Destroy")) {	// if we have destroy card, use it to delete the blind alley tile
+							myMove = MyTools.deadEndToDestroy(boardState, nuggetIndex);
+						}
+						else {
+							for (int i = 0; i < currentCard.size(); i++) {
+								if (MyTools.isBlindAlleyCard(boardState, i) || currentCard.get(i).getName().equals("Map")) {	
+									// if we have blind alley card, drop it, if we have Map card but we know the destination, drop it as well
+									myMove = new SaboteurMove(new SaboteurDrop(), i, 0, playerNb);
+									break;
+								}
+								else if (currentCard.get(i).getName().equals("Malus")) {	// if we have Malus card in our hand, use it
+									myMove = new SaboteurMove(new SaboteurMalus(), 0, 0, playerNb);
+									break;
+								}
+								else {
+									if (i == (currentCard.size() - 1)) {		// the only card remaining that we can play is destroy, play it randomly
+										myMove = new SaboteurMove(new SaboteurDrop(), 0, 0, playerNb);
+										break;
+									}
+									continue;
+								}
+							}
+						}
+				}
+				else {
+//					int winningStepIndex = MyTools.hasWinningStep(boardState, legalMoves, playerNb);
+//					if (winningStepIndex != -1) {
+//						myMove = legalMoves.get(winningStepIndex);
 //					}
-//					else {
-//
-//					}
-//				}
-				else
-					myMove = legalMoves.get(moveIndex);
-//			}
+//					else
+						myMove = legalMoves.get(moveIndex);
+				}
+			}
 
 		}
 		else {	// if we cannnot use Tile card
@@ -153,96 +172,4 @@ public class StudentPlayer extends SaboteurPlayer {
 		else		// if it is not a legal move, play randomly (to ensure no error occurs)
 			return boardState.getRandomMove();
 	}
-
-	/*	public Move chooseMove(SaboteurBoardState boardState) {
-		// You probably will make separate functions in MyTools.
-		// For example, maybe you'll need to load some pre-processed best opening
-		// strategies...
-		// MyTools.getSomething();
-		ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
-		int player = boardState.getTurnPlayer();
-		boolean isMaximizing = true;
-		if (player == 1)
-			isMaximizing = true;
-		else
-			isMaximizing = false;
-		// Get the best node containing its score and index via minimax
-		int[] node = minimax (boardState, 2, Integer.MIN_VALUE, Integer.MAX_VALUE, player, isMaximizing);		
-		Move myMove = legalMoves.get(node[1]);
-		// Return your move to be processed by the server.
-		return myMove;
-	}
-
-
-	// Proceed a minimax search in the board with alpha beta prunning
-	// It will return a score and its index number in order to get the best move.
-	public int[] minimax(SaboteurBoardState boardState, int depth, int alpha, int beta, int player, boolean isMaximizing) {
-		int[] node = new int[2];
-		int score = 0;
-		int bestScore = 0;
-		int index = 0;
-		SaboteurBoardState newState = boardState;
-		// If game is over, check who wins the game or tie the game
-		if (boardState.gameOver() == true) {
-			if (boardState.getWinner() == player) {
-				score = 1000 - depth;
-			}
-			else if (boardState.getWinner() != player && boardState.getWinner() < 2){
-				score = -1000 - depth;
-			}
-			else
-				score = 0;
-		}
-		// If depth is equal to 0, call evaluation
-		else if (depth == 0) {
-			score = evaluation(newState);
-		}
-		// If game is neither over nor depth is not equal to 0, recursively call minimax to get the desired score and index
-		else {
-			if (isMaximizing == true) {
-				bestScore = Integer.MIN_VALUE;
-				ArrayList<SaboteurMove> legalMoves = newState.getAllLegalMoves();
-				for (int i = 0; i < legalMoves.size(); i++) {
-					newState.processMove(legalMoves.get(i));
-					score = minimax(newState, depth - 1, alpha, beta, player, false)[0];
-					bestScore = Math.max(score, bestScore);
-					if (alpha < beta) {
-						alpha = Math.max(alpha, score);
-						index = i;
-					}
-					else if (beta <= alpha)
-							break;
-				}
-				node[0] = bestScore;
-				node[1] = index;
-				return node;
-			}
-			else {
-				bestScore = Integer.MAX_VALUE;
-				ArrayList<SaboteurMove> legalMoves = newState.getAllLegalMoves();
-				for (int i = 0; i < legalMoves.size(); i++) {
-					newState.processMove(legalMoves.get(i));
-					score = minimax(newState, depth - 1, alpha, beta, player, true)[0];
-					bestScore = Math.min(score, bestScore);
-					if (alpha < beta) {
-						alpha = Math.min(alpha, score);
-						index = i;
-					}
-					else if (beta <= alpha)
-							break;
-				}
-				node[0] = bestScore;
-				node[1] = index;
-				return node;
-			}
-		}
-		node[0] = score;
-		node[1] = index;
-		return node;
-	}
-
-	public int evaluation(SaboteurBoardState boardState) {
-		int score = 0;
-		return score;
-	} */
 }
