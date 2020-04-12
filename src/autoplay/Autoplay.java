@@ -42,7 +42,7 @@ public class Autoplay {
 
             //One need to change those variables
             ProcessBuilder client1_pb = new ProcessBuilder("java", "-cp", "bin", "-Xms520m", "-Xmx520m",
-                    "boardgame.Client", "student_player.StudentPlayer");
+                    "boardgame.Client", "Saboteur.RandomSaboteurPlayer");
             client1_pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 
             ProcessBuilder client2_pb = new ProcessBuilder("java", "-cp", "bin", "-Xms520m", "-Xmx520m",
