@@ -8,6 +8,7 @@ import Saboteur.SaboteurBoardState;
 import Saboteur.SaboteurMove;
 import Saboteur.cardClasses.SaboteurTile;
 import Saboteur.cardClasses.SaboteurCard;
+import Saboteur.cardClasses.SaboteurDestroy;
 
 public class MyTools {
 	public static double getSomething() {
@@ -164,5 +165,57 @@ public class MyTools {
 		}
 		return atLeastOnefound;
 	}
+	
+	public static int getDistance(SaboteurMove move, int[] goalXY) {
+      int[] moveXY = {move.getPosPlayed()[0], move.getPosPlayed()[1]};
+      int distance = Math.abs(moveXY[0] - goalXY[0]) + Math.abs(moveXY[1] - goalXY[1]);
+      return distance;
+  }
+	
+	public static SaboteurMove deadEndToDestroy(SaboteurBoardState boardState, int objectiveTileNumber) {
+      ArrayList<SaboteurMove> myLegalMoves = boardState.getAllLegalMoves();
+      int minDistance = 1000;
+      int bestMove = 0;
+      if (objectiveTileNumber == -1) objectiveTileNumber = 1; //if objective is unknown, Goal is middle tile
+      int[] goalXY = {boardState.hiddenPos[objectiveTileNumber][0], boardState.hiddenPos[objectiveTileNumber][1]};
+      
+      for (int i = 0; i < myLegalMoves.size(); i++) {
+          SaboteurMove move = myLegalMoves.get(i);
+
+          if(move.getCardPlayed() instanceof SaboteurDestroy){
+              int[] posMov = move.getPosPlayed();
+              SaboteurTile tileToDestroy = boardState.getHiddenBoard()[posMov[0]][posMov[1]];
+              if (blindAlleyCardList.contains(tileToDestroy.getIdx())) {
+                  int newDistance = getDistance(move, goalXY);
+                  
+                  if (newDistance < minDistance) {
+                      bestMove = i;
+                      minDistance = newDistance;
+                  }
+              }
+              
+          }
+      }
+      
+      return myLegalMoves.get(bestMove);
+  }
+  
+  public static boolean deadEndOnBoardToDestroy(SaboteurBoardState boardState) {
+      ArrayList<SaboteurMove> myLegalMoves = boardState.getAllLegalMoves();
+      for (int i = 0; i < myLegalMoves.size(); i++) {
+          SaboteurMove move = myLegalMoves.get(i);
+          if(move.getCardPlayed() instanceof SaboteurDestroy){
+              int[] posMov = move.getPosPlayed();
+              SaboteurTile tileToDestroy = boardState.getHiddenBoard()[posMov[0]][posMov[1]];
+              if (blindAlleyCardList.contains(tileToDestroy.getIdx()) && move.getPosPlayed()[0] > 5) {
+                  return true;
+              }
+          }
+              
+      }
+      return false;
+  }
+  
+
 
 }
