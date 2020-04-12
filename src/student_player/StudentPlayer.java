@@ -5,7 +5,6 @@ import boardgame.Move;
 import Saboteur.SaboteurPlayer;
 import Saboteur.cardClasses.SaboteurBonus;
 import Saboteur.cardClasses.SaboteurCard;
-import Saboteur.cardClasses.SaboteurDestroy;
 import Saboteur.cardClasses.SaboteurDrop;
 import Saboteur.cardClasses.SaboteurMalus;
 import Saboteur.cardClasses.SaboteurMap;
@@ -37,22 +36,12 @@ public class StudentPlayer extends SaboteurPlayer {
 		int playerNb = boardState.getTurnPlayer();
 		ArrayList<int[]> originTargets = new ArrayList<>();
 		originTargets.add(new int[]{SaboteurBoardState.originPos,SaboteurBoardState.originPos}); 
-		//		System.out.println("Our AI is " + playerNb);
 		ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
 		ArrayList<SaboteurCard> currentCard = boardState.getCurrentPlayerCards();
 		int nuggetIndex = MyTools.getNuggetPositionIndex(boardState);
-		/*		for (int i = 0; i < currentCard.size(); i ++) {
-			System.out.println(MyTools.isBlindAlleyCard(boardState, i));
-			System.out.println(currentCard.get(i).getName());
-		}
-		for(int i = 0; i < MyTools.blindAlleyCardList.size(); i++) {
-			System.out.println(MyTools.blindAlleyCardList.get(i));
-		}
-		System.out.println("nuggtet Index is:" + nuggetIndex); */
 		int moveIndex;
 		if (boardState.getNbMalus(playerNb) == 0) {	// if we can use Tile card
 			moveIndex = MyTools.chooseNextBestMove(nuggetIndex, legalMoves, boardState);
-			//			System.out.println("move Index is:" + moveIndex);
 			if (nuggetIndex == -1 && moveIndex == -2) {	// if we do not know the destination but we have Map card in hand
 				myMove = new SaboteurMove(new SaboteurMap(), SaboteurBoardState.hiddenPos[MyTools.nexthiddenTileIndex(boardState)][0], 
 						SaboteurBoardState.hiddenPos[MyTools.nexthiddenTileIndex(boardState)][1], playerNb);
@@ -67,7 +56,7 @@ public class StudentPlayer extends SaboteurPlayer {
 						myMove = new SaboteurMove(new SaboteurMalus(), 0, 0, playerNb);
 						break;
 					}
-					else	 {	// if our hand does not have the above two, we choose a random move.
+					else	 {	// if our hand does not have the above two, assume the destination is the middle hidden tile
 						if (i == (currentCard.size() - 1)) {
 							moveIndex = MyTools.chooseNextBestMove(1, legalMoves, boardState);
 							myMove = legalMoves.get(moveIndex);
@@ -87,52 +76,46 @@ public class StudentPlayer extends SaboteurPlayer {
 						myMove = new SaboteurMove(new SaboteurMalus(), 0, 0, playerNb);
 						break;
 					}
-					else	 {	// if our hand does not have the above two, we choose a random move.
+					else	 {	// if our hand does not have the above two, we drop the first card in hand
 						if (i == (currentCard.size() - 1)) {
-							myMove = boardState.getRandomMove();
+							myMove = new SaboteurMove(new SaboteurDrop(), 0, 0, playerNb);
 							break;
 						}
 						continue;
 					}
 				}
 			}
-			else {	// if nugget index != -1 and we have normal card
+			else {	// if we know the nugget position and we have normal card
 				int[] targetPos = {SaboteurBoardState.hiddenPos[nuggetIndex][0], SaboteurBoardState.hiddenPos[nuggetIndex][1]};
 				if (MyTools.cardPath(boardState, originTargets, targetPos, true) && MyTools.pathToHidden(boardState, nuggetIndex) == false) {
 					// if from origin to destination, card is connected but one-map is not connected, which means there is a blind alley card played by opponent
 					// in the middle of the path, resulting game is not over
-						if (MyTools.hasCardInHand(currentCard, "Destroy")) {	// if we have destroy card, use it to delete the blind alley tile
-							myMove = MyTools.deadEndToDestroy(boardState, nuggetIndex);
-						}
-						else {
-							for (int i = 0; i < currentCard.size(); i++) {
-								if (MyTools.isBlindAlleyCard(boardState, i) || currentCard.get(i).getName().equals("Map")) {	
-									// if we have blind alley card, drop it, if we have Map card but we know the destination, drop it as well
-									myMove = new SaboteurMove(new SaboteurDrop(), i, 0, playerNb);
+					if (MyTools.hasCardInHand(currentCard, "Destroy")) {	// if we have destroy card, use it to delete the blind alley tile
+						myMove = MyTools.deadEndToDestroy(boardState, nuggetIndex);
+					}
+					else {	// if we do not have destroy card in hand, we drop/use card to get destroy card
+						for (int i = 0; i < currentCard.size(); i++) {
+							if (MyTools.isBlindAlleyCard(boardState, i) || currentCard.get(i).getName().equals("Map")) {	
+								// if we have blind alley card, drop it, if we have Map card but we know the destination, drop it as well
+								myMove = new SaboteurMove(new SaboteurDrop(), i, 0, playerNb);
+								break;
+							}
+							else if (currentCard.get(i).getName().equals("Malus")) {	// if we have Malus card in our hand, use it
+								myMove = new SaboteurMove(new SaboteurMalus(), 0, 0, playerNb);
+								break;
+							}
+							else {
+								if (i == (currentCard.size() - 1)) {		// drop the first card
+									myMove = new SaboteurMove(new SaboteurDrop(), 0, 0, playerNb);
 									break;
 								}
-								else if (currentCard.get(i).getName().equals("Malus")) {	// if we have Malus card in our hand, use it
-									myMove = new SaboteurMove(new SaboteurMalus(), 0, 0, playerNb);
-									break;
-								}
-								else {
-									if (i == (currentCard.size() - 1)) {		// the only card remaining that we can play is destroy, play it randomly
-										myMove = new SaboteurMove(new SaboteurDrop(), 0, 0, playerNb);
-										break;
-									}
-									continue;
-								}
+								continue;
 							}
 						}
+					}
 				}
-				else {
-//					int winningStepIndex = MyTools.hasWinningStep(boardState, legalMoves, playerNb);
-//					if (winningStepIndex != -1) {
-//						myMove = legalMoves.get(winningStepIndex);
-//					}
-//					else
-						myMove = legalMoves.get(moveIndex);
-				}
+				else		// it ideally needs to check the step that we can win the game, combo with destroy, but failed to implement it
+					myMove = legalMoves.get(moveIndex);
 			}
 
 		}
@@ -157,8 +140,8 @@ public class StudentPlayer extends SaboteurPlayer {
 						break;
 					}
 					else {
-						if (i == (currentCard.size() - 1)) {		// the only card remaining that we can play is destroy, play it randomly
-							myMove = boardState.getRandomMove();
+						if (i == (currentCard.size() - 1)) {		// drop the first card
+							myMove = new SaboteurMove(new SaboteurDrop(), 0, 0, playerNb);
 							break;
 						}
 						continue;

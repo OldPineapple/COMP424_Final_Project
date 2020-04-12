@@ -15,9 +15,9 @@ public class MyTools {
 		return Math.random();
 	}
 
-	public static final String[] blindAlleyCard = {"Tile:1", "Tile:2", "Tile:3", "Tile:4", "Tile:11", "Tile:12", "Tile:13", "Tile:14", "Tile:15"};
+	public static final String[] blindAlleyCard = {"Tile:1", "Tile:2", "Tile:3", "Tile:4", "Tile:5", "Tile:7", "Tile:11", "Tile:12", "Tile:13", "Tile:14", "Tile:15"};
 	public static final List<String> blindAlleyCardList = Arrays.asList(blindAlleyCard);
-	public static final String[] normalCard = {"Tile:0", "Tile:5", "Tile:6", "Tile:7", "Tile:8", "Tile:9", "Tile:10"};
+	public static final String[] normalCard = {"Tile:0", "Tile:6", "Tile:8", "Tile:9", "Tile:10"};
 	public static final List<String> normalCardList = Arrays.asList(normalCard);
 	public static final String[] toolCard = {"Bonus", "Destroy", "Malus", "Map"};
 	public static final List<String> toolCardList = Arrays.asList(toolCard);
@@ -116,7 +116,6 @@ public class MyTools {
 			visited.add(visitingPos);
 			if(usingCard) addUnvisitedNeighborToQueue(boardState, visitingPos,queue,visited,SaboteurBoardState.BOARD_SIZE,usingCard);
 			else addUnvisitedNeighborToQueue(boardState, visitingPos,queue,visited,SaboteurBoardState.BOARD_SIZE*3,usingCard);
-//			System.out.println(queue.size());
 		}
 		return false;
 	}
@@ -143,7 +142,6 @@ public class MyTools {
 		originTargets.add(new int[]{SaboteurBoardState.originPos,SaboteurBoardState.originPos}); //the starting points
 		int[] targetPos = {SaboteurBoardState.hiddenPos[nuggetIndex][0], SaboteurBoardState.hiddenPos[nuggetIndex][1]};
 		if (cardPath(boardState, originTargets, targetPos, true)) { //checks that there is a cardPath
-//			System.out.println("card path found"); //todo remove
 			//                    this.printBoard();
 			//next: checks that there is a path of ones.
 			ArrayList<int[]> originTargets2 = new ArrayList<>();
@@ -156,11 +154,7 @@ public class MyTools {
 			//get the target position in 0-1 coordinate
 			int[] targetPos2 = {targetPos[0]*3+1, targetPos[1]*3+1};
 			if (cardPath(boardState, originTargets2, targetPos2, false)) {
-//				System.out.println("0-1 path found");
 				atLeastOnefound =true;
-			}
-			else{
-//				System.out.println("0-1 path was not found");
 			}
 		}
 		return atLeastOnefound;
@@ -214,18 +208,6 @@ public class MyTools {
               
       }
       return false;
-  }
-  
-  // This method aims to check if we have a winning step
-  public static int hasWinningStep(SaboteurBoardState boardState, ArrayList<SaboteurMove> legalMoves, int playerNb) {
-	  for (int i = 0; i < legalMoves.size(); i++) {
-		  SaboteurBoardState clonedBoardState = boardState;
-		  clonedBoardState.processMove(legalMoves.get(i));
-		  if (clonedBoardState.gameOver() == true && clonedBoardState.getWinner() == playerNb) {
-			  return i;
-		  }
-	  }
-	  return -1;
   }
 
 }
