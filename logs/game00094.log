@@ -1,0 +1,42 @@
+# Server version 0.08 running on DESKTOP-R5EVID9:8123
+# Game ID: 94
+# Board class: Saboteur.SaboteurBoard
+# Timeout: 2000
+# First Move Timeout: 30000
+# Date: Sun Apr 12 19:19:52 EDT 2020
+# Player 1: Player-0, '260778557', running on DESKTOP-R5EVID9
+# Player 2: Player-1, 'RandomPlayer', running on DESKTOP-R5EVID9
+START Player-0 260778557
+START Player-1 RandomPlayer
+BoardInit:Tile:0,Tile:9,Map,Tile:14,Tile:13,Map,Tile:2,Tile:10,Tile:0,Tile:8,Tile:5,Tile:8,Malus,Tile:12,Tile:8,Tile:4,Tile:3,Bonus,Malus,Map,Bonus,Tile:7,Tile:9,Tile:5,Tile:6,Tile:9,Tile:1,Bonus,Destroy,Tile:7,Tile:9,Tile:8,Tile:7,Destroy,Tile:10,Tile:7,Tile:11,Bonus,Tile:6,Tile:10,Tile:6-Tile:7,Tile:15,Tile:6,Tile:9,Map,Destroy,Tile:6-Map,Map,Tile:8,Tile:5,Tile:5,Tile:0,Tile:0-Tile:nugget,Tile:hidden2,Tile:hidden1
+Tile:6 6 5 1
+Map 12 3 0
+Map 12 7 1
+Tile:8 6 4 0
+Drop 1 0 1
+Tile:0 7 4 0
+Map 12 7 1
+Tile:0 8 4 0
+Tile:2_flip 4 5 1
+Tile:9 6 3 0
+Tile:6 7 3 1
+Tile:8 9 4 0
+Tile:7 7 5 1
+Tile:10 9 3 0
+Tile:5 5 4 1
+Tile:8 10 4 0
+Tile:9 3 5 1
+Drop 0 0 0
+Tile:3 3 4 1
+Drop 0 0 0
+Tile:0 11 4 1
+Drop 0 0 0
+Drop 1 0 1
+Drop 0 0 0
+Destroy 7 5 1
+Drop 0 0 0
+Tile:8 2 4 1
+Tile:9 10 3 0
+Tile:0 11 3 1
+GAMEOVER WINNER 1
+# Game ended: Sun Apr 12 19:19:52 EDT 2020

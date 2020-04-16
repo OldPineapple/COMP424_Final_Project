@@ -22,17 +22,17 @@ import java.lang.ProcessBuilder.Redirect;
 //
 public class Autoplay {
     public static void main(String args[]) {
-        int n_games;
-        try {
-            n_games = Integer.parseInt(args[0]);
-            if (n_games < 1) {
-                throw new Exception();
-            }
-        } catch (Exception e) {
-            System.err.println(
-                    "First argument to Autoplay must be a positive int " + "giving the number of games to play.");
-            return;
-        }
+//        int n_game;
+//        try {
+//            n_games = Integer.parseInt(args[0]);
+//            if (n_games < 1) {
+//                throw new Exception();
+//            }
+//        } catch (Exception e) {
+//            System.err.println(
+//                    "First argument to Autoplay must be a positive int " + "giving the number of games to play.");
+//            return;
+//        }
 
         try {
             ProcessBuilder server_pb = new ProcessBuilder("java", "-cp", "bin", "boardgame.Server","-ng", "-k");
@@ -49,7 +49,7 @@ public class Autoplay {
                     "boardgame.Client", "Saboteur.RandomSaboteurPlayer");
             client2_pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 
-            for (int i = 0; i < n_games; i++) {
+            for (int i = 0; i < 10; i++) {
                 System.out.println("Game " + i);
 
                 try {

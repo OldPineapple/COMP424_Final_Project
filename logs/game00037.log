@@ -1,0 +1,16 @@
+# Server version 0.08 running on DESKTOP-R5EVID9:8123
+# Game ID: 37
+# Board class: Saboteur.SaboteurBoard
+# Timeout: 2000
+# First Move Timeout: 30000
+# Date: Sun Apr 12 17:47:52 EDT 2020
+# Player 1: Player-0, '260778557', running on DESKTOP-R5EVID9
+# Player 2: Player-1, 'RandomPlayer', running on DESKTOP-R5EVID9
+START Player-0 260778557
+START Player-1 RandomPlayer
+BoardInit:Tile:7,Tile:9,Tile:8,Tile:7,Tile:0,Tile:7,Tile:8,Tile:5,Tile:1,Tile:7,Bonus,Tile:9,Tile:5,Malus,Tile:0,Tile:12,Tile:11,Bonus,Tile:8,Map,Map,Tile:6,Map,Tile:9,Tile:6,Tile:6,Tile:4,Tile:15,Tile:10,Destroy,Tile:8,Tile:6,Tile:9,Tile:0,Destroy,Tile:9,Tile:3,Tile:2,Bonus,Tile:8,Map-Tile:10,Map,Tile:13,Tile:0,Bonus,Tile:5,Tile:5-Tile:7,Malus,Map,Tile:10,Tile:14,Destroy,Tile:6-Tile:nugget,Tile:hidden1,Tile:hidden2
+Map 12 3 1
+Map 12 3 0
+Tile:7_flip 5 6 1
+GAMEOVER ILLEGAL MOVE: Player 1, CardUsed: (Tile:0), PosOfUse: (6, 6) WINNER 1
+# Game ended: Sun Apr 12 17:47:52 EDT 2020
